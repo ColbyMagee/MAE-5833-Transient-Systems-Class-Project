@@ -1,0 +1,110 @@
+ " ABSORPTION CYCLE EXAMPLE "
+ 
+{ https://www.youtube.com/watch?v=vU24zIQgPiU }
+ 
+$UnitSystem SI Mass kJ K kPa C
+ 
+"Inputs"
+T_amb = 25 [C]           	// Ambient Temperature
+T_C = 5 [C]                  	// Evaporator Temperature 
+T_gen = 90 [C]             	// Genrator Temperature 
+T_abs = 32 [C]             	// Absorber Temperature 
+eta_p = 0.62                 	// Pump Efficiency 
+ 
+P_gen = 1.6e3 [kPa]     	// Generator Pressure 
+P_abs = 400 [kPa]      	// Absorber Pressure 
+DT_cond = 4 [C]            	// Approach temperature condenser 
+DT_evap = 3[C]             	// Approach temperature condenser 
+m_dot_r = 0.05 [kg/s]    	// mass flow rate of refrigerant  
+ 
+"! State 3" "Vapor Leaving generator / entering condenser "
+T[3] = T_gen
+P[3] = P_gen 
+Qu[3] = 1				// Quality of vaper
+X[3] = massfraction(NH3H2O, T=T[3], P=P[3], Q=Qu[3])	// Mass of amonina entering condendseor 
+h[3] = Enthalpy(NH3H2O, T=T[3], P=P[3], Q=Qu[3])
+ 
+"! State 4" "Liquid Leaving condenser / entering valve 1"
+P[4] = P[3]
+X[4] = X[3]
+T[4] = T_amb + DT_cond 
+h[4] = enthalpy (NH3H2O, T=T[4], P=P[4],  X=X[4])
+ 
+"! State 1" "Leaving Valve / entering evaporator"
+P[1] = P_abs 
+X[1] = X[4]
+h[1] = h[4]
+T[1] = Temperature (NH3H2O, P=P[4], X=X[1], h=h[1])
+Qu[1] = Quality (NH3H2O, P=P[4], X=X[1], h=h[1])
+ 
+"! State 2" "Leaving Evaporator / Entering Absorber "
+P[2] = P[1]
+X[2] = X[1]
+T[2] = T_C - DT_evap 
+h[2] = enthalpy (NH3H2O, P=P[2], X=X[2], T=T[2])
+Qu[2] = Quality (NH3H2O, P=P[2], X=X[2], T=T[2])
+ 
+ 
+"! State 5" "Liquid Leaving absorber / Entering Pump  "
+Qu[5] = 0    // Asume exits as saturated liquid
+T[5] = T_abs 
+P[5] = P_abs 
+h[5] =  enthalpy (NH3H2O, T=T[5], P=P[5],  Q=Qu[5])
+X[5] =  massfraction (NH3H2O, T=T[5], P=P[5],  Q=Qu[5])
+rho[5] = density (NH3H2O, Q=Qu[5], P=P[5], T=T[5])
+ 
+ 
+"! State 6" "Liquid leaving pump/entering generator"
+X[6] = X[5]
+P[6] = P_gen 
+h[6] = h[5] + (P[6] - P[5])/(rho[5]*eta_p)	// U+Pv = U+ P/rho = h   
+ 
+ 
+"! State 7" "Liquid leaving generator/entering valve 2"
+Qu[7] = 0   // Assume saturated liquid
+P[7] = P_gen 
+T[7] = T_gen 
+h[7] = enthalpy (NH3H2O, P=P[7], T=T[7], Q=Qu[7])
+X[7] = massfraction (NH3H2O, P=P[7], T=T[7], Q=Qu[7])
+ 
+ 
+"! State 8" "Liquid leaving valve 2/entering absorber"
+X[8] = X[7]
+P[8] = P_abs 
+h[8] = h[7]
+T[8] = Temperature (NH3H2O, X=X[8], P=P[8], h=h[8])
+ 
+ 
+// Energy  Balances on condenser and evaporator 
+Q_dot_cond = m_dot_r *(h[3]-h[4])
+Q_dot_evap = m_dot_r *(h[2]-h[1])
+ 
+// Mass Balance on Absorber 
+m_dot_r * X[2] + m_dot_gen *X[8] = m_dot_abs*X[5]
+m_dot_r + m_dot_gen = m_dot_abs 
+ 
+ 
+" Energy balances on generator, pump and absorber "
+m_dot_r *h[2] + m_dot_gen*h[8] = Q_dot_abs + m_dot_abs*h[5]  // Absorber 
+
+W_dot_p = m_dot_abs*(h[6]-h[5])                                                       // Pump 
+
+m_dot_abs *h[6]  + Q_dot_gen = m_dot_r*h[3] + m_dot_gen*h[7]  // Generator 
+ 
+COP = Q_dot_evap / Q_dot_gen 
+
+
+
+	
+// Subscript r = refrigerant - ammonia strong solution 
+
+
+
+
+
+
+
+
+
+
+//END
