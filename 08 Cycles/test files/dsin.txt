@@ -1,0 +1,497 @@
+#1
+char Aclass(3,24)
+Adymosim
+1.4
+Modelica experiment file
+
+
+#    Experiment parameters
+double experiment(7,1)
+       0                   # StartTime    Time at which integration starts
+                           #              (and linearization and trimming time)
+       1                   # StopTime     Time at which integration stops
+       0                   # Increment    Communication step size, if > 0
+     500                   # nInterval    Number of communication intervals, if > 0
+  1.0000000000000000E-04   # Tolerance    Relative precision of signals for
+                           #              simulation, linearization and trimming
+       0                   # MaxFixedStep Maximum step size of fixed step size
+                           #              integrators, if > 0.0
+       8                   # Algorithm    Integration algorithm as integer (1...28)
+                           #
+                           #             | model|       |        | dense | state |
+                           # Algorithm   | typ  | stiff | order  | output| event |
+                           # ------------+------+-------+--------+-------+-------+
+                           #  1 | deabm  |  ode |   no  |  1-12  |  yes  |   no  |
+                           #  2 | lsode1 |  ode |   no  |  1-12  |  yes  |   no  |
+                           #  3 | lsode2 |  ode |  yes  |  1-5   |  yes  |   no  |
+                           #  4 | lsodar |  ode |  both |1-12,1-5|  yes  |  yes  |
+                           #  5 | dopri5 |  ode |   no  |   5    |   no  |   no  |
+                           #  6 | dopri8 |  ode |   no  |   8    |   no  |   no  |
+                           #  7 | grk4t  |  ode |  yes  |   4    |   no  |   no  |
+                           #  8 | dassl  |  dae |  yes  |  1-5   |  yes  |  yes  |
+                           #  9 | odassl | hdae |  yes  |  1-5   |  yes  |  yes  |
+                           # 10 | mexx   | hdae |   no  |  2-24  |   no  |   no  |
+                           # 11 | euler  |  ode |   no  |   1    |   no  |  yes  |
+                           # 12 | rkfix2 |  ode |   no  |   2    |   no  |  yes  |
+                           # 13 | rkfix3 |  ode |   no  |   3    |   no  |  yes  |
+                           # 14 | rkfix4 |  ode |   no  |   4    |   no  |  yes  |
+                           #>=14| others |  ode |yes/no |  2-5   |   yes |  yes  |
+                           # ---+--------+------+-------+--------+-------+-------+
+                           # euler and rkfix have fixed stepsize.
+
+
+#    Method tuning parameters
+double method(27,1)
+       1                   # grid     type of communication time grid, defined by
+                           #          = 1: equidistant points ("Increment/nInterval")
+                           #          = 2: vector of grid points ("tgrid")
+                           #          = 3: variable step integrator (automatically)
+                           #          = 4: model (call of "increment" in Dymola, e.g.
+                           #                      incr=Time > 2 then 0 else 0.1
+                           #                      dummy=increment(incr))
+                           #          grid = 1,3 is stopped by "StopTime"
+                           #          grid = 2   is stopped by "tgrid(last)"
+                           #          grid = 4   runs forever (stopped by model)
+       1                   # nt       Use every NT time instant, if grid = 3
+       3                   # dense    1/2/3 restart/step/interpolate GRID points
+       1                   # evgrid   0/1 do not/save event points in comm. time grid
+       1                   # evu      0/1 U-discontinuity does not/trigger events
+       0                   # evuord       U-discontinuity order to consider (0,1,...)
+       0                   # error    0/1/2 One message/warning/error messages
+       0                   # jac      0/1 Compute jacobian numerically/by BLOCKJ
+       0                   # xd0c     0/1 Compute/set XD0
+       0                   # f3       0/1 Ignore/use F3 of HDAE (= index 1)
+       0                   # f4       0/1 Ignore/use F4 of HDAE (= index 2)
+       0                   # f5       0/1 Ignore/use F5 of HDAE (= invar.)
+       0                   # debug    flags for debug information (1<<0 uses pdebug) 
+     100                   # pdebug       priority of debug information (1...100)
+       0                   # fmax     Maximum number of evaluations of BLOCKF, if > 0
+       0                   # ordmax   Maximum allowed integration order, if > 0
+       0                   # hmax     Maximum absolute stepsize, if > 0
+       0                   # hmin     Minimum absolute stepsize, if > 0 (use with care!)
+       0                   # h0       Stepsize to be attempted on first step, if > 0
+  2.0000000000000000E-14   # teps     Bound to check, if 2 equal time instants
+  1.0000000000000000E-10   # eveps    Hysteresis epsilon at event points
+      20                   # eviter   Maximum number of event iterations
+  9.9999999999999995E-07   # delaym   Minimum time increment in delay buffers
+       1                   # fexcep   0/1 floating exception crashes/stops dymosim
+       1                   # tscale   clock-time = tscale*simulation-time, if grid = 5
+                           #          > 1: simulation too slow
+                           #          = 1: simulation-time = real-time
+                           #          < 1: simulation too fast
+       1                   # shared   (not used)
+    2473                   # memkey   (not used)
+
+
+#    Output parameters
+int settings(13,1)
+ 0                         # lprec    0/1 do not/store result data in double
+ 1                         # lx       0/1 do not/store x  (state variables)
+ 1                         # lxd      0/1 do not/store xd (derivative of states)
+ 1                         # lu       0/1 do not/store u  (input     signals)
+ 1                         # ly       0/1 do not/store y  (output    signals)
+ 0                         # lz       0/1 do not/store z  (indicator signals)
+ 1                         # lw       0/1 do not/store w  (auxiliary signals)
+ 1                         # la       0/1 do not/store a  (alias     signals)
+ 0                         # lperf    0/1 do not/store performance indicators
+ 0                         # levent   0/1 do not/store event point
+ 1                         # lres     0/1 do not/store results on result file
+ 0                         # lshare   0/1 do not/store info data for shared memory on dsshare.txt
+ 1                         # lform    0/1 ASCII/Matlab-binary storage format of results
+                           #              (for simulation/linearization; not for trimming)
+
+
+#    Names of initial variables
+char initialName(114,71)
+_dummy
+_derdummy
+cycle.xiIsWater
+cycle.T_amb
+cycle.T_C
+cycle.T_gen
+cycle.T_abs
+cycle.P_gen
+cycle.P_abs
+cycle.DT_cond
+cycle.DT_evap
+cycle.eta_p
+cycle.m_dot_r
+cycle.thermalCompressor.vleFluidType.fixedMixingRatio
+cycle.thermalCompressor.vleFluidType.nc_propertyCalculation
+cycle.thermalCompressor.vleFluidType.nc
+cycle.thermalCompressor.vleFluidType.mixingRatio_propertyCalculation[1]
+cycle.thermalCompressor.vleFluidType.mixingRatio_propertyCalculation[2]
+cycle.thermalCompressor.vleFluidType.defaultMixingRatio[1]
+cycle.thermalCompressor.vleFluidType.defaultMixingRatio[2]
+cycle.thermalCompressor.vleFluidType.xi_default[1]
+cycle.thermalCompressor.vleFluidType.ID
+cycle.thermalCompressor.xiIsWater
+cycle.thermalCompressor.T_gen
+cycle.thermalCompressor.T_abs
+cycle.thermalCompressor.P_gen
+cycle.thermalCompressor.P_abs
+cycle.thermalCompressor.eta_p
+cycle.thermalCompressor.X3_start
+cycle.thermalCompressor.X5_start
+cycle.thermalCompressor.X7_start
+cycle.thermalCompressor.Q_flow_gen
+cycle.thermalCompressor.P_pump
+cycle.thermalCompressor.Q_flow_abs
+cycle.thermalCompressor.rho5
+cycle.thermalCompressor.m_dot_abs
+cycle.thermalCompressor.m_dot_gen
+cycle.thermalCompressor.f
+cycle.condenser.vleFluidType.fixedMixingRatio
+cycle.condenser.vleFluidType.nc_propertyCalculation
+cycle.condenser.vleFluidType.nc
+cycle.condenser.vleFluidType.mixingRatio_propertyCalculation[1]
+cycle.condenser.vleFluidType.mixingRatio_propertyCalculation[2]
+cycle.condenser.vleFluidType.defaultMixingRatio[1]
+cycle.condenser.vleFluidType.defaultMixingRatio[2]
+cycle.condenser.vleFluidType.xi_default[1]
+cycle.condenser.vleFluidType.ID
+cycle.condenser.xiIsWater
+cycle.condenser.T_out
+cycle.condenser.Q_flow
+cycle.valve.vleFluidType.fixedMixingRatio
+cycle.valve.vleFluidType.nc_propertyCalculation
+cycle.valve.vleFluidType.nc
+cycle.valve.vleFluidType.mixingRatio_propertyCalculation[1]
+cycle.valve.vleFluidType.mixingRatio_propertyCalculation[2]
+cycle.valve.vleFluidType.defaultMixingRatio[1]
+cycle.valve.vleFluidType.defaultMixingRatio[2]
+cycle.valve.vleFluidType.xi_default[1]
+cycle.valve.vleFluidType.ID
+cycle.valve.xiIsWater
+cycle.valve.m_flow_set
+cycle.evaporator.vleFluidType.fixedMixingRatio
+cycle.evaporator.vleFluidType.nc_propertyCalculation
+cycle.evaporator.vleFluidType.nc
+cycle.evaporator.vleFluidType.mixingRatio_propertyCalculation[1]
+cycle.evaporator.vleFluidType.mixingRatio_propertyCalculation[2]
+cycle.evaporator.vleFluidType.defaultMixingRatio[1]
+cycle.evaporator.vleFluidType.defaultMixingRatio[2]
+cycle.evaporator.vleFluidType.xi_default[1]
+cycle.evaporator.vleFluidType.ID
+cycle.evaporator.xiIsWater
+cycle.evaporator.T_out
+cycle.evaporator.Q_flow
+cycle.T[1]
+cycle.T[6]
+cycle.T[8]
+cycle.h[1]
+cycle.h[2]
+cycle.h[3]
+cycle.h[5]
+cycle.h[6]
+cycle.h[7]
+cycle.X[1]
+cycle.X[5]
+cycle.X[7]
+cycle.Qu[1]
+cycle.Qu[2]
+cycle.Qu[3]
+cycle.Qu[4]
+cycle.Qu[5]
+cycle.Qu[6]
+cycle.Qu[7]
+cycle.Qu[8]
+cycle.Q_gen_kW
+cycle.Q_evap_kW
+cycle.Q_cond_kW
+cycle.Q_abs_kW
+cycle.W_pump_kW
+cycle.COP
+cycle.balance_W
+cycle.dispQgen.use_numberPort
+cycle.dispQgen.significantDigits
+cycle.dispQevap.use_numberPort
+cycle.dispQevap.significantDigits
+cycle.dispQcond.use_numberPort
+cycle.dispQcond.significantDigits
+cycle.dispQabs.use_numberPort
+cycle.dispQabs.significantDigits
+cycle.dispWpump.use_numberPort
+cycle.dispWpump.significantDigits
+cycle.dispCOP.use_numberPort
+cycle.dispCOP.significantDigits
+cycle.dispBalance.use_numberPort
+cycle.dispBalance.significantDigits
+
+double initialValue(114,6)
+ -1       1                  0       0                  2    0   # _dummy
+  0       0                  0       0                  3    0   # _derdummy
+ -1       1                  0       0                  1  281   # cycle.xiIsWater
+ -1  2.9814999999999998E+02  0 1.7976931348623157E+308  1  280   # cycle.T_amb
+ -1  2.7814999999999998E+02  0 1.7976931348623157E+308  1  280   # cycle.T_C
+ -1  3.6314999999999998E+02  0 1.7976931348623157E+308  1  280   # cycle.T_gen
+ -1  3.0514999999999998E+02  0 1.7976931348623157E+308  1  280   # cycle.T_abs
+ -1  1.6000000000000000E+06  0 1.7976931348623157E+308  1  280   # cycle.P_gen
+ -1  4.0000000000000000E+05  0 1.7976931348623157E+308  1  280   # cycle.P_abs
+ -1       4                  0       0                  1  280   # cycle.DT_cond
+ -1       3                  0       0                  1  280   # cycle.DT_evap
+ -1  6.2000000000000000E-01  0       0                  1  280   # cycle.eta_p
+ -1  5.0000000000000003E-02  0       0                  1  280   # cycle.m_dot_r
+  0       0                  0       0                  6  769   # cycle.thermalCompressor.vleFluidType.fixedMixingRatio
+  0       2                  1 1.7976931348623157E+308  6  770   # cycle.thermalCompressor.vleFluidType.nc_propertyCalculation
+  0       2                  0       0                  6  770   # cycle.thermalCompressor.vleFluidType.nc
+  0  1.7999999999999999E-01  0       0                  6  768   # cycle.thermalCompressor.vleFluidType.mixingRatio_propertyCalculation[1]
+  0  8.1999999999999995E-01  0       0                  6  768   # cycle.thermalCompressor.vleFluidType.mixingRatio_propertyCalculation[2]
+  0  1.7999999999999999E-01  0       0                  6  768   # cycle.thermalCompressor.vleFluidType.defaultMixingRatio[1]
+  0  8.1999999999999995E-01  0       0                  6  768   # cycle.thermalCompressor.vleFluidType.defaultMixingRatio[2]
+  0  1.7999999999999999E-01  0       0                  6  768   # cycle.thermalCompressor.vleFluidType.xi_default[1]
+  0       0                  0       0                  6  770   # cycle.thermalCompressor.vleFluidType.ID
+  0       0                  0       0                  6  257   # cycle.thermalCompressor.xiIsWater
+  0  2.8814999999999998E+02  0 1.7976931348623157E+308  6  256   # cycle.thermalCompressor.T_gen
+  0  2.8814999999999998E+02  0 1.7976931348623157E+308  6  256   # cycle.thermalCompressor.T_abs
+  0       0                  0 1.7976931348623157E+308  6  256   # cycle.thermalCompressor.P_gen
+  0       0                  0 1.7976931348623157E+308  6  256   # cycle.thermalCompressor.P_abs
+  0       0                  0       0                  6  256   # cycle.thermalCompressor.eta_p
+ -1  9.6999999999999997E-01  0       0                  1  280   # cycle.thermalCompressor.X3_start
+ -1  4.6999999999999997E-01  0       0                  1  280   # cycle.thermalCompressor.X5_start
+ -1  3.8000000000000000E-01  0       0                  1  280   # cycle.thermalCompressor.X7_start
+  0   80000                  0       0                  6  256   # cycle.thermalCompressor.Q_flow_gen
+  0       0                  0       0                  6  256   # cycle.thermalCompressor.P_pump
+  0       0                  0       0                  6  256   # cycle.thermalCompressor.Q_flow_abs
+  0       0                  0 1.7976931348623157E+308  6  256   # cycle.thermalCompressor.rho5
+  0  3.4999999999999998E-01  0       0                  6  256   # cycle.thermalCompressor.m_dot_abs
+  0  2.9999999999999999E-01  0       0                  6  256   # cycle.thermalCompressor.m_dot_gen
+  0       0                  0       0                  6  256   # cycle.thermalCompressor.f
+  0       0                  0       0                  6  769   # cycle.condenser.vleFluidType.fixedMixingRatio
+  0       2                  1 1.7976931348623157E+308  6  770   # cycle.condenser.vleFluidType.nc_propertyCalculation
+  0       2                  0       0                  6  770   # cycle.condenser.vleFluidType.nc
+  0  1.7999999999999999E-01  0       0                  6  768   # cycle.condenser.vleFluidType.mixingRatio_propertyCalculation[1]
+  0  8.1999999999999995E-01  0       0                  6  768   # cycle.condenser.vleFluidType.mixingRatio_propertyCalculation[2]
+  0  1.7999999999999999E-01  0       0                  6  768   # cycle.condenser.vleFluidType.defaultMixingRatio[1]
+  0  8.1999999999999995E-01  0       0                  6  768   # cycle.condenser.vleFluidType.defaultMixingRatio[2]
+  0  1.7999999999999999E-01  0       0                  6  768   # cycle.condenser.vleFluidType.xi_default[1]
+  0       0                  0       0                  6  770   # cycle.condenser.vleFluidType.ID
+  0       0                  0       0                  6  257   # cycle.condenser.xiIsWater
+  0  2.8814999999999998E+02  0 1.7976931348623157E+308  6  256   # cycle.condenser.T_out
+  0       0                  0       0                  6  256   # cycle.condenser.Q_flow
+  0       0                  0       0                  6  769   # cycle.valve.vleFluidType.fixedMixingRatio
+  0       2                  1 1.7976931348623157E+308  6  770   # cycle.valve.vleFluidType.nc_propertyCalculation
+  0       2                  0       0                  6  770   # cycle.valve.vleFluidType.nc
+  0  1.7999999999999999E-01  0       0                  6  768   # cycle.valve.vleFluidType.mixingRatio_propertyCalculation[1]
+  0  8.1999999999999995E-01  0       0                  6  768   # cycle.valve.vleFluidType.mixingRatio_propertyCalculation[2]
+  0  1.7999999999999999E-01  0       0                  6  768   # cycle.valve.vleFluidType.defaultMixingRatio[1]
+  0  8.1999999999999995E-01  0       0                  6  768   # cycle.valve.vleFluidType.defaultMixingRatio[2]
+  0  1.7999999999999999E-01  0       0                  6  768   # cycle.valve.vleFluidType.xi_default[1]
+  0       0                  0       0                  6  770   # cycle.valve.vleFluidType.ID
+  0       0                  0       0                  6  257   # cycle.valve.xiIsWater
+  0       0                  0       0                  6  256   # cycle.valve.m_flow_set
+  0       0                  0       0                  6  769   # cycle.evaporator.vleFluidType.fixedMixingRatio
+  0       2                  1 1.7976931348623157E+308  6  770   # cycle.evaporator.vleFluidType.nc_propertyCalculation
+  0       2                  0       0                  6  770   # cycle.evaporator.vleFluidType.nc
+  0  1.7999999999999999E-01  0       0                  6  768   # cycle.evaporator.vleFluidType.mixingRatio_propertyCalculation[1]
+  0  8.1999999999999995E-01  0       0                  6  768   # cycle.evaporator.vleFluidType.mixingRatio_propertyCalculation[2]
+  0  1.7999999999999999E-01  0       0                  6  768   # cycle.evaporator.vleFluidType.defaultMixingRatio[1]
+  0  8.1999999999999995E-01  0       0                  6  768   # cycle.evaporator.vleFluidType.defaultMixingRatio[2]
+  0  1.7999999999999999E-01  0       0                  6  768   # cycle.evaporator.vleFluidType.xi_default[1]
+  0       0                  0       0                  6  770   # cycle.evaporator.vleFluidType.ID
+  0       0                  0       0                  6  257   # cycle.evaporator.xiIsWater
+  0  2.8814999999999998E+02  0 1.7976931348623157E+308  6  256   # cycle.evaporator.T_out
+  0       0                  0       0                  6  256   # cycle.evaporator.Q_flow
+  0  2.8814999999999998E+02  0 1.7976931348623157E+308  6  256   # cycle.T[1]
+  0  2.8814999999999998E+02  0 1.7976931348623157E+308  6  256   # cycle.T[6]
+  0  2.8814999999999998E+02  0 1.7976931348623157E+308  6  256   # cycle.T[8]
+  0       0                  0       0                  6  256   # cycle.h[1]
+  0       0                  0       0                  6  256   # cycle.h[2]
+  0       0                  0       0                  6  256   # cycle.h[3]
+  0       0                  0       0                  6  256   # cycle.h[5]
+  0       0                  0       0                  6  256   # cycle.h[6]
+  0       0                  0       0                  6  256   # cycle.h[7]
+  0       0                  0       1                  6  256   # cycle.X[1]
+  0       0                  0       1                  6  256   # cycle.X[5]
+  0       0                  0       1                  6  256   # cycle.X[7]
+  0       0                  0       0                  6  256   # cycle.Qu[1]
+  0       0                  0       0                  6  256   # cycle.Qu[2]
+  0       1                  0       0                  6  256   # cycle.Qu[3]
+  0       0                  0       0                  6  256   # cycle.Qu[4]
+  0       0                  0       0                  6  256   # cycle.Qu[5]
+  0       0                  0       0                  6  256   # cycle.Qu[6]
+  0       0                  0       0                  6  256   # cycle.Qu[7]
+  0       0                  0       0                  6  256   # cycle.Qu[8]
+  0       0                  0       0                  6  256   # cycle.Q_gen_kW
+  0       0                  0       0                  6  256   # cycle.Q_evap_kW
+  0       0                  0       0                  6  256   # cycle.Q_cond_kW
+  0       0                  0       0                  6  256   # cycle.Q_abs_kW
+  0       0                  0       0                  6  256   # cycle.W_pump_kW
+  0       0                  0       0                  6  256   # cycle.COP
+  0       0                  0       0                  6  256   # cycle.balance_W
+  0       0                  0       0                  6  769   # cycle.dispQgen.use_numberPort
+ -1       3                  1 1.7976931348623157E+308  1  282   # cycle.dispQgen.significantDigits
+  0       0                  0       0                  6  769   # cycle.dispQevap.use_numberPort
+ -1       3                  1 1.7976931348623157E+308  1  282   # cycle.dispQevap.significantDigits
+  0       0                  0       0                  6  769   # cycle.dispQcond.use_numberPort
+ -1       3                  1 1.7976931348623157E+308  1  282   # cycle.dispQcond.significantDigits
+  0       0                  0       0                  6  769   # cycle.dispQabs.use_numberPort
+ -1       3                  1 1.7976931348623157E+308  1  282   # cycle.dispQabs.significantDigits
+  0       0                  0       0                  6  769   # cycle.dispWpump.use_numberPort
+ -1       3                  1 1.7976931348623157E+308  1  282   # cycle.dispWpump.significantDigits
+  0       0                  0       0                  6  769   # cycle.dispCOP.use_numberPort
+ -1       3                  1 1.7976931348623157E+308  1  282   # cycle.dispCOP.significantDigits
+  0       0                  0       0                  6  769   # cycle.dispBalance.use_numberPort
+ -1       2                  1 1.7976931348623157E+308  1  282   # cycle.dispBalance.significantDigits
+
+
+# Matrix with 6 columns defining the initial value calculation
+# (columns 5 and 6 are not utilized for the calculation but are
+#  reported by dymosim via dymosim -i for user convenience):
+#
+# column 1: Type of initial value
+#           = -2: special case: for continuing simulation (column 2 = value)
+#           = -1: fixed value (column 2 = fixed value)
+#           =  0: free value, i.e., no restriction (column 2 = initial value)
+#           >  0: desired value (column 1 = weight for optimization
+#                                column 2 = desired value)
+#                 use weight=1, since automatic scaling usually
+#                 leads to equally weighted terms
+# column 2: fixed, free or desired value according to column 1.
+# column 3: Minimum value (ignored, if Minimum >= Maximum).
+# column 4: Maximum value (ignored, if Minimum >= Maximum).
+#           Minimum and maximum restrict the search range in initial
+#           value calculation. They might also be used for scaling.
+# column 5: Category of variable.
+#           = 1: parameter.
+#           = 2: state.
+#           = 3: state derivative.
+#           = 4: output.
+#           = 5: input.
+#           = 6: auxiliary variable.
+# column 6: Data type of variable and flags according to dsBaseType
+#  <value>&3= 0: real.
+#  <value>&3= 1: boolean.
+#  <value>&3= 2: integer.
+#
+# Initial values are calculated according to the following procedure:
+#
+# Initial values are calculated according to the following procedure:
+#
+# - If parameters, states and inputs are FIXED, and other variables
+#   are FREE, the initialization is performed in the normal way.
+#
+# - If parameters and inputs are FIXED, and all other variables
+#   have special case for continue (-2 in 1st column), or FREE
+#   the initialization is ignored and variables are set to these values.
+#   This is intended to continue the simulation.
+#
+#   Which variables will be important for initialization and continue
+#   is indicated by value in column 6 & dsStartMasks.
+#
+char initialDescription(114,102)
+dummy
+derdummy
+true: TILMedia xi[1] is the water mass fraction (set false if X looks inverted) [:#(type=Boolean)]
+Ambient temperature [K|degC]
+Evaporator temperature [K|degC]
+Generator temperature [K|degC]
+Absorber temperature [K|degC]
+Generator (high-side) pressure [Pa|bar]
+Absorber (low-side) pressure [Pa|bar]
+Condenser approach temperature [K,]
+Evaporator approach temperature [K,]
+Solution pump efficiency [1]
+Refrigerant mass flow rate [kg/s]
+Treat medium as pseudo pure in Modelica if it is a mixture [:#(type=Boolean)]
+Number of components for fluid property calculations [:#(type=Integer)]
+Number of components in Modelica models [:#(type=Integer)]
+Mixing ratio for fluid property calculation (={1} for pure components)
+Mixing ratio for fluid property calculation (={1} for pure components)
+Default composition for models in Modelica (={1} for pure components)
+Default composition for models in Modelica (={1} for pure components)
+Default mass fractions
+ID is used to map the selected VLEFluid to the sim.cumulatedVLEFluidMass array item [:#(type=Integer)]
+true: TILMedia xi[1] is the water mass fraction (xi = 1 - X_NH3) [:#(type=Boolean)]
+Generator temperature [K|degC]
+Absorber temperature [K|degC]
+Generator (high-side) pressure [Pa|bar]
+Absorber (low-side) pressure [Pa|bar]
+Solution pump efficiency [1]
+Start: generator vapor NH3 fraction
+Start: strong solution NH3 fraction
+Start: weak solution NH3 fraction
+Generator heat input [W]
+Solution pump power [W]
+Absorber heat rejection [W]
+State 5 density [kg/m3|g/cm3]
+Strong solution, absorber -> generator [kg/s]
+Weak solution, generator -> absorber [kg/s]
+Circulation ratio [1]
+Treat medium as pseudo pure in Modelica if it is a mixture [:#(type=Boolean)]
+Number of components for fluid property calculations [:#(type=Integer)]
+Number of components in Modelica models [:#(type=Integer)]
+Mixing ratio for fluid property calculation (={1} for pure components)
+Mixing ratio for fluid property calculation (={1} for pure components)
+Default composition for models in Modelica (={1} for pure components)
+Default composition for models in Modelica (={1} for pure components)
+Default mass fractions
+ID is used to map the selected VLEFluid to the sim.cumulatedVLEFluidMass array item [:#(type=Integer)]
+true: TILMedia xi[1] is the water mass fraction (xi = 1 - X_NH3) [:#(type=Boolean)]
+Outlet temperature (state 4) [K|degC]
+Heat rejected [W]
+Treat medium as pseudo pure in Modelica if it is a mixture [:#(type=Boolean)]
+Number of components for fluid property calculations [:#(type=Integer)]
+Number of components in Modelica models [:#(type=Integer)]
+Mixing ratio for fluid property calculation (={1} for pure components)
+Mixing ratio for fluid property calculation (={1} for pure components)
+Default composition for models in Modelica (={1} for pure components)
+Default composition for models in Modelica (={1} for pure components)
+Default mass fractions
+ID is used to map the selected VLEFluid to the sim.cumulatedVLEFluidMass array item [:#(type=Integer)]
+true: TILMedia xi[1] is the water mass fraction (xi = 1 - X_NH3) [:#(type=Boolean)]
+Refrigerant mass flow rate [kg/s]
+Treat medium as pseudo pure in Modelica if it is a mixture [:#(type=Boolean)]
+Number of components for fluid property calculations [:#(type=Integer)]
+Number of components in Modelica models [:#(type=Integer)]
+Mixing ratio for fluid property calculation (={1} for pure components)
+Mixing ratio for fluid property calculation (={1} for pure components)
+Default composition for models in Modelica (={1} for pure components)
+Default composition for models in Modelica (={1} for pure components)
+Default mass fractions
+ID is used to map the selected VLEFluid to the sim.cumulatedVLEFluidMass array item [:#(type=Integer)]
+true: TILMedia xi[1] is the water mass fraction (xi = 1 - X_NH3) [:#(type=Boolean)]
+Outlet temperature (state 2) [K|degC]
+Cooling capacity [W]
+State temperatures [K|degC]
+State temperatures [K|degC]
+State temperatures [K|degC]
+State specific enthalpies [J/kg]
+State specific enthalpies [J/kg]
+State specific enthalpies [J/kg]
+State specific enthalpies [J/kg]
+State specific enthalpies [J/kg]
+State specific enthalpies [J/kg]
+State ammonia mass fractions
+State ammonia mass fractions
+State ammonia mass fractions
+State vapor qualities
+State vapor qualities
+State vapor qualities
+State vapor qualities
+State vapor qualities
+State vapor qualities
+State vapor qualities
+State vapor qualities
+Generator heat input [kW]
+Cooling capacity [kW]
+Condenser heat rejection [kW]
+Absorber heat rejection [kW]
+Solution pump power [kW]
+Coefficient of performance [1]
+Overall energy balance residual (should be ~0) [W]
+= true, if numberPort enabled [:#(type=Boolean)]
+Number of significant digits to be shown [:#(type=Integer)]
+= true, if numberPort enabled [:#(type=Boolean)]
+Number of significant digits to be shown [:#(type=Integer)]
+= true, if numberPort enabled [:#(type=Boolean)]
+Number of significant digits to be shown [:#(type=Integer)]
+= true, if numberPort enabled [:#(type=Boolean)]
+Number of significant digits to be shown [:#(type=Integer)]
+= true, if numberPort enabled [:#(type=Boolean)]
+Number of significant digits to be shown [:#(type=Integer)]
+= true, if numberPort enabled [:#(type=Boolean)]
+Number of significant digits to be shown [:#(type=Integer)]
+= true, if numberPort enabled [:#(type=Boolean)]
+Number of significant digits to be shown [:#(type=Integer)]
+
