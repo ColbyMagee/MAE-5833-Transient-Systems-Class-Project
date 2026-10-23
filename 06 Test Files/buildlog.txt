@@ -1,0 +1,10 @@
+ 
+Compiling and linking the model (Visual C++). 
+ 
+dsmodel.c
+dsmodel.c(2726): warning C4018: '<': signed/unsigned mismatch
+dsmodel.c(2786): warning C4018: '<': signed/unsigned mismatch
+   Creating library dymosim.lib and object dymosim.exp
+ 
+Successful generation of Dymosim. 
+ 
